@@ -6,7 +6,7 @@
  * Copyright 2013-2016 Alan Hong. and other contributors
  * summernote may be freely distributed under the MIT license./
  *
- * Date: 2017-02-13T17:07Z
+ * Date: 2017-02-20T13:54Z
  */
 (function (factory) {
   /* global define */
@@ -3819,16 +3819,20 @@
     this.deleteCol = function (rng) {
       var cell = dom.ancestor(rng.commonAncestor(), dom.isCell);
       var row = $(cell).closest('tr');
-      var rowsGroup = $(row).siblings();
-      rowsGroup.push(row);
-      var cellPos = row.children('td, th').index($(cell));
+      var cellSiblings = $(cell).siblings();
 
-      for (var idTr = 0; idTr < rowsGroup.length; idTr++) {
-        var r = rowsGroup[idTr];
-        var c = $(r).children('td, th')[cellPos];
-        if (c) {
-          c.remove();
-        }
+      if (cellSiblings.length) {
+        var rowsGroup = $(row).parent().children();
+        var i = $(cell).index() + 1;
+
+        rowsGroup.each(function () {
+          var tdSel = 'td:nth-child(' + i + ')';
+          var thSel = 'th:nth-child(' + i + ')';
+          $(this).find(tdSel + ',' + thSel).remove();
+        });
+      }
+      else {
+        this.deleteTable(rng);
       }
     };
 
